@@ -1,0 +1,79 @@
+version: 0.0
+os: linux
+
+# Seção 'files': Define os arquivos a serem copiados do artifact do S3 para os destinos nas instâncias EC2
+files:
+  - source: /
+    destination: /var/www/html
+    owner: www-data
+    group: www-data
+    overwrite: yes  # Substitui arquivos existentes no destino
+
+# Hooks do CodeDeploy: Configurações de scripts para serem executados em diferentes etapas do deployment
+hooks:
+
+  # BeforeBlockTraffic: Executado antes de o tráfego ser bloqueado (somente para deployments com controle de tráfego)
+  BeforeBlockTraffic:
+    - location: scripts/before_block_traffic.sh
+      timeout: 300  # Tempo máximo de execução do script, em segundos
+      runas: root   # Usuário sob o qual o script será executado
+
+  # BlockTraffic: Executado para bloquear o tráfego para as instâncias EC2 durante o deployment
+  BlockTraffic:
+    - location: scripts/block_traffic.sh
+      timeout: 300
+      runas: root
+
+  # AfterBlockTraffic: Executado após o tráfego ser bloqueado
+  AfterBlockTraffic:
+    - location: scripts/after_block_traffic.sh
+      timeout: 300
+      runas: root
+
+  # BeforeInstall: Executado antes da instalação dos arquivos no destino final
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 300
+      runas: root
+    # Possível uso: fazer backup de arquivos, parar serviços, ou preparar diretórios
+
+  # Install: Este passo é implícito. O CodeDeploy automaticamente move os arquivos da seção 'files' para o destino definido
+
+  # AfterInstall: Executado após os arquivos serem movidos para o destino final
+  AfterInstall:
+    - location: scripts/after_install.sh
+      timeout: 300
+      runas: root
+    # Possível uso: descompactar arquivos, configurar permissões, iniciar serviços
+
+  # BeforeAllowTraffic: Executado antes de o tráfego ser liberado de volta às instâncias (somente para deployments com controle de tráfego)
+  BeforeAllowTraffic:
+    - location: scripts/before_allow_traffic.sh
+      timeout: 300
+      runas: root
+
+  # AllowTraffic: Executado para liberar o tráfego de volta às instâncias EC2 após o deployment
+  AllowTraffic:
+    - location: scripts/allow_traffic.sh
+      timeout: 300
+      runas: root
+
+  # AfterAllowTraffic: Executado após o tráfego ser liberado
+  AfterAllowTraffic:
+    - location: scripts/after_allow_traffic.sh
+      timeout: 300
+      runas: root
+
+  # ApplicationStart: Executado para iniciar a aplicação ou serviços necessários
+  ApplicationStart:
+    - location: scripts/start_application.sh
+      timeout: 300
+      runas: root
+    # Possível uso: iniciar servidores web, serviços de aplicação, etc.
+
+  # ValidateService: Executado para validar que a aplicação está funcionando corretamente após o deployment
+  ValidateService:
+    - location: scripts/validate_service.sh
+      timeout: 300
+      runas: root
+    # Possível uso: realizar testes automatizados, verificações de integridade, etc.

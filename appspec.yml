@@ -1,0 +1,23 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /opt/bitnami/apache2/htdocs
+file_exists_behavior: OVERWRITE
+
+hooks:
+  BeforeInstall:
+    - location: deploy/scripts/01_before_install.sh
+      timeout: 60
+      runas: root
+
+  AfterInstall:
+    - location: deploy/scripts/02_after_install.sh
+      timeout: 60
+      runas: root
+
+  ApplicationStart:
+    - location: deploy/scripts/03_application_start.sh
+      timeout: 60
+      runas: root
