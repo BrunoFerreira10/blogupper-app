@@ -2,6 +2,9 @@
 
 echo "------ Parar aplicação ------"
 systemctl stop apache2
+
+rm -rf /var/www/html/index.html
+
 sudo a2enmod rewrite
 # sudo a2enmod ssl # Usando via ACM no ELB
 sudo a2enmod headers
