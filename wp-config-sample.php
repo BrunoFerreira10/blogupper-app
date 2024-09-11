@@ -37,6 +37,11 @@ define( 'DB_CHARSET', 'utf8' );
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
+define('FS_METHOD', 'direct');
+
+if(strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
+  $_SERVER['HTTPS']='on';
+
 /**#@+
  * Authentication unique keys and salts.
  *

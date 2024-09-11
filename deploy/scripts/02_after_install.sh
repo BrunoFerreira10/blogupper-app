@@ -26,9 +26,11 @@ sed -i "s/define( 'DB_PASSWORD', '.*' );/define( 'DB_PASSWORD', '$DB_PASSWORD' )
 sed -i "s/define( 'DB_HOST', '.*' );/define( 'DB_HOST', '$DB_HOST' );/" $CONFIG_FILE
 
 echo "------ Ajustar permissões ------"
-sudo chown -R www-data:www-data /var/www/html
-sudo chmod -R 755 /var/www/html/wp-content
-sudo chmod 600 /var/www/html/wp-config.php
+sudo chown -R www-data:www-data /var/www
+sudo chmod -R 2775 /var/www
+find /var/www -type d -exec sudo chmod 2775 {} \;
+find /var/www -type f -exec sudo chmod 0664 {} \;
+
 
 echo "------ Finalizado after_install.sh ------"
 
